@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 import PyPDF2
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
