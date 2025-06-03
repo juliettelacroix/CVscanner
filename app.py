@@ -1,18 +1,16 @@
 import os
 import streamlit as st
 import pdfplumber
-from langchain_community.llms import HuggingFaceHub
+from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
+#os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
-# Initialize Hugging Face LLM
-llm = HuggingFaceHub(
-    repo_id = "tiiuae/falcon-7b-instruct",
-    model_kwargs={"temperature": 0.5, "max_length": 512},
-)
+# Initialize OpenAI LLM
+llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.3)
 
 # Prompt template
 template = """You are an AI HR assistant. Given a job description and a CV, score how well the CV matches the job description on a scale from 0 to 100.
