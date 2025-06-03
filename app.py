@@ -4,6 +4,7 @@ import pdfplumber
 from langchain_community.llms import HuggingFaceHub
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
 
@@ -36,12 +37,22 @@ prompt = PromptTemplate(
 
 chain = LLMChain(llm=llm, prompt=prompt)
 
+# Extract text from CV in PDF format
 def extract_text_from_pdf(pdf_file):
     with pdfplumber.open(pdf_file) as pdf:
         pages = [page.extract_text() for page in pdf.pages]
+    return "\n".join(page for page in pages if page)
 
-    return "\n".join(pages)
+# Split text into chunks
+def split_text(text, chunk_size=1000, chunk_overlap=100):
+    # Using Langchain's text splitter
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50
+    )
+    return splitter.split_text(text)
 
+# Streamlit App
 def main():
     st.title("CV Scanner")
 
@@ -55,7 +66,8 @@ def main():
     job_description = st.text_area("Paste Job Description")
 
     uploaded_file = st.file_uploader("Upload Resume (PDF)", type=["pdf"])
-
+    
+    cv_text = ""
     if uploaded_file is not None:
         with st.spinner("Extracting text from PDF..."):
             cv_text = extract_text_from_pdf(uploaded_file)
@@ -66,13 +78,26 @@ def main():
             st.warning("Please enter the job description.")
             return
         if not cv_text.strip():
-            st.warning("Please upload a CV (PDF).")
+            st.warning("Please upload a CV in PDF format.")
             return
 
-        with st.spinner("Scoring..."):
-            result = chain.run(job_description=job_description, cv_text=cv_text)
-        st.subheader("CV Score & Explanation")
-        st.text(result)
+        with st.spinner("Scanning..."):
+            chunks = split_text(cv_text)
+
+            combined_text = ""
+            max_combined_chars = 2500
+            for chunk in chunks:
+                if len(combined_text) + len(chunk) <= max_combined_chars:
+                    combined_text += chunk + "\n"
+                else:
+                    break
+
+            try:
+                result = chain.run(job_description=job_description, cv_text=combined_text)
+                st.subheader("CV Score & Feedback")
+                st.text(result)
+            except Exception as e:
+                st.error(f"Error during scoring: {str(e)}")
 
 if __name__ == "__main__":
     main()
