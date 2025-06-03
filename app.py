@@ -17,8 +17,8 @@ llm = ChatOpenAI(
 )
 
 # Prompt template
-template = """You are an AI HR assistant. Given a job description and a CV, score how well the CV matches the job description on a scale from 0 to 100.
-Give justifications on the score by mentioning specific skill matches, experience relevance, and gaps.
+template = """You are an AI HR assistant. Given a job description and a CV, score how well the CV matches the job description on a scale from 0% to 100%.
+Give justifications on the score by mentioning specific skill matches, experience relevance, and identify any missing, underrepresented or insufficiently detailed skills, certifications or experiences that are important for the role.
 
 Job Description:
 {job_description}
@@ -29,7 +29,7 @@ CV Text:
 Return the result as:
 
 Score: <number between 0 and 100>
-Feedback: <text>
+Feedback: <clean and structured list>
 """
 
 prompt = PromptTemplate(
@@ -56,7 +56,7 @@ def split_text(text, chunk_size=1000, chunk_overlap=100):
 
 # Streamlit App
 def main():
-    st.title("CV Scanner")
+    st.title("AI CV Scanner")
 
     st.markdown(
         """
