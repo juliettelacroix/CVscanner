@@ -5,13 +5,12 @@ from langchain import HuggingFaceHub
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-HUGGINGFACEHUB_API_TOKEN = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
 
 # Initialize Hugging Face LLM
 llm = HuggingFaceHub(
     repo_id="google/flan-t5-small",
     model_kwargs={"temperature": 0, "max_length": 512},
-    huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN,
 )
 
 # Prompt template
