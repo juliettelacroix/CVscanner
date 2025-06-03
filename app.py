@@ -9,8 +9,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 #os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
-# Initialize OpenAI LLM
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.3)
+# Initialize LLM
+llm = ChatOpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=st.secrets["OPENROUTER_API_KEY"],
+    model="mistralai/mistral-7b-instruct",
+)
 
 # Prompt template
 template = """You are an AI HR assistant. Given a job description and a CV, score how well the CV matches the job description on a scale from 0 to 100.
