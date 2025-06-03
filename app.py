@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 import pdfplumber
-from langchain import HuggingFaceHub
+from langchain_community.llms import HuggingFaceHub
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
@@ -9,8 +9,8 @@ os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.secrets["HUGGINGFACEHUB_API_TOKEN"]
 
 # Initialize Hugging Face LLM
 llm = HuggingFaceHub(
-    repo_id="google/flan-t5-small",
-    model_kwargs={"temperature": 0, "max_length": 512},
+    repo_id = "tiiuae/falcon-7b-instruct",
+    model_kwargs={"temperature": 0.5, "max_length": 512},
 )
 
 # Prompt template
