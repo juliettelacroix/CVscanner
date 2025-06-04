@@ -153,7 +153,7 @@ def main():
         df_summary = pd.DataFrame(summary_data)
 
         st.subheader("👩‍🎓 Candidates Summary")
-        st.dataframe(df_summary.style.format({"Score (%)": "{:.1f}"}))
+        st.table(df_summary)
 
         st.write("---")
         st.subheader("🦾 Detailed AI Feedback")
@@ -179,7 +179,7 @@ def main():
         st.sidebar.markdown("## 📧 Simulated Email to Top Candidate")
 
         if candidate_email != "Unknown":
-            st.sidebar.success(f"✅ Interview invitation has been simulated for:**{candidate_name}** at {candidate_email}")
+            st.sidebar.success(f"✅ Interview invitation has been simulated for: \n**{candidate_name}** ({candidate_email})")
             st.write("### 🔍 View Email:")
 
             email_subject = "Interview Invitation"
