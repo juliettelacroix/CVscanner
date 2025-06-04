@@ -178,20 +178,21 @@ def main():
         top_candidate = results[0]
         candidate_name = top_candidate["name"]
         candidate_email = top_candidate["email"]
+        candidate_phone = top_candidate["phone"]
 
         st.sidebar.markdown("## 📧 Simulated Email to Top Candidate")
 
         if candidate_email != "Unknown":
             st.sidebar.success(f"✅ Interview invitation has been simulated for: \n**{candidate_name}** ({candidate_email})")
-            st.write("### 🔍 View Email:")
+            st.sidebar.write("### 🔍 View Email:")
 
             email_subject = "Interview Invitation"
             email_body = f"""
 Dear {candidate_name},
 
-Thank you for your application. Your application stood out among many qualified candidates, and we would like to invite you to an interview to discuss your qualifications further.
+Thank you for your application. Your profile stood out among many qualified candidates, and we would like to invite you to an interview to discuss your qualifications further.
                 
-If you are still interested, please reply to this message with your availabilities.your
+If you are still interested, please reply to this message with your availabilities.
 
 The company and the team are looking forward speaking to you !
 
@@ -200,8 +201,12 @@ HR Team
 """
             st.sidebar.markdown(f"### Subject: {email_subject}")
             st.sidebar.code(email_body.strip(), language="markdown")
+            
             if st.sidebar.button("📞 Call the top candidate"):
-                st.sidebar.success(f"{phone}")
+                if candidate_phone != "Unknown":
+                    st.sidebar.success(f"{candidate_phone}")
+                else:
+                    st.sidebar.warning("⚠️ Phone number not available for this candidate.")
         else:
             st.sidebar.warning("Top candidate email is unknown. Couldn't simulate email.")
 
