@@ -73,7 +73,7 @@ def main():
 
     st.markdown(
         """
-        Paste your job description and upload all your candidate's CV.
+        Paste your job description and upload all your candidate's CV. \n
         CVscanner's AI Agent analyzes and scores each candidate to speed up hiring.
         """
     )
@@ -86,7 +86,7 @@ def main():
         if not job_description.strip():
             st.warning("Please enter the job description.")
             return
-        if not not uploaded_files or len(uploaded_files) == 0:
+        if not uploaded_files or len(uploaded_files) == 0:
             st.warning("Please upload at least one CV in PDF format.")
             return
         
