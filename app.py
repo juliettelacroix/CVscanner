@@ -20,7 +20,7 @@ template = """
 You are an AI HR assistant. Given a job description and a CV, do the following:
 1. Extract the candidate's full name, email address, phone number and location from the CV text.
 2. Score how well the CV matches the job description on a scale from 0% to 100%.
-3. Provide a clear and concise feedback explaining the score. The feedback should include matched skills, relevant experience, and missing skills.
+3. Provide a clear and concise feedback with only 3 bullet points explaining the score. The feedback should only include matched skills, relevant experience, and missing or underrepresented skills.
 
 Return a JSON object with the following keys:
 - "name": string (full name or "Unknown" if not found)
@@ -69,7 +69,7 @@ def extract_email(text):
 
 # Streamlit App 
 def main():
-    st.title("AI CVs Scanner")
+    st.title("📄 AI CVs Scanner")
 
     st.markdown(
         """
@@ -78,23 +78,23 @@ def main():
         """
     )
 
-    job_description = st.text_area("Paste your Job Description.")
+    job_description = st.text_area("📝 Paste your Job Description")
 
-    uploaded_files = st.file_uploader("Upload Candidate's Resume (PDF)", type=["pdf"], accept_multiple_files=True)
+    uploaded_files = st.file_uploader("📥 Upload Candidate's Resume (PDF)", type=["pdf"], accept_multiple_files=True)
     
     if st.button("Score All CVs"):
         if not job_description.strip():
-            st.warning("Please enter the job description.")
+            st.warning("⚠ Please enter the job description.")
             return
         if not uploaded_files or len(uploaded_files) == 0:
-            st.warning("Please upload at least one CV in PDF format.")
+            st.warning("⚠ Please upload at least one CV in PDF format.")
             return
         
         # Storing the results to build a dataframe later
         results = []
 
         for uploaded_file in uploaded_files:
-            with st.spinner(f"Processing {uploaded_file.name}..."):
+            with st.spinner(f"🤖 Processing {uploaded_file.name}..."):
                 # Extract CV text
                 cv_text = extract_text_from_pdf(uploaded_file)
                 # Chunk and combine text to avoid rate limit
@@ -119,6 +119,7 @@ def main():
                     # Ensure fields exist
                     name = parsed.get("name", "Unknown")
                     email = parsed.get("email", "Unknown")
+                    phone = parsed.get("phone number", "Unknown")
                     location = parsed.get("location", "Unknown")
                     score = parsed.get("score", 0)
                     feedback = parsed.get("feedback", [])
@@ -130,6 +131,7 @@ def main():
                     "filename": uploaded_file.name,
                     "name": name,
                     "email": email,
+                    "phone": phone,
                     "location": location,
                     "score": score,
                     "feedback": feedback
@@ -150,11 +152,11 @@ def main():
 
         df_summary = pd.DataFrame(summary_data)
 
-        st.subheader("Candidates Summary")
+        st.subheader("👩‍🎓 Candidates Summary")
         st.dataframe(df_summary.style.format({"Score (%)": "{:.1f}"}))
 
         st.write("---")
-        st.subheader("Detailed AI Feedback")
+        st.subheader("🦾 Detailed AI Feedback")
 
         # Feedback for each candidate
         for res in results:
@@ -168,6 +170,35 @@ def main():
             else:
                 st.write(res["feedback"])
             st.write("---")
+
+        # AI Agent feature - automatically sending email to top candidate
+        top_candidate = results[0]
+        candidate_name = top_candidate["name"]
+        candidate_email = top_candidate["email"]
+
+        st.sidebar.markdown("## 📧 Simulated Email to Top Candidate")
+
+        if candidate_email != "Unknown":
+            st.sidebar.success(f"✅ Interview invitation has been simulated for:**{candidate_name}** at {candidate_email}")
+            st.write("### 🔍 View Email:")
+
+            email_subject = "Interview Invitation"
+            email_body = f"""
+Dear {candidate_name},
+
+Thank you for your application. Your application stood out among many qualified candidates, and we would like to invite you to an interview to discuss your qualifications further.
+                
+If you are still interested, please reply to this message with your availabilities.your
+
+The company and the team are looking forward speaking to you !
+
+Best regards,
+HR Team
+"""
+            st.sidebar.markdown(f"### Subject: {email_subject}")
+            st.sidebar.code(email_body.strip(), language="markdown")
+        else:
+            st.sidebar.warning("Top candidate email is unknown. Couldn't simulate email.")
 
 if __name__ == "__main__":
     main()
