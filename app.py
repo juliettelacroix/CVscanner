@@ -146,11 +146,13 @@ def main():
             summary_data.append({
                 "Name": res["name"],
                 "Email": res["email"],
+                "Phone Number": res["phone"],
                 "Location": res["location"],
                 "Score (%)": res["score"]
             })
 
         df_summary = pd.DataFrame(summary_data)
+        df_summary = df_summary.reset_index(drop=True)
 
         st.subheader("👩‍🎓 Candidates Summary")
         st.table(df_summary)
@@ -162,6 +164,7 @@ def main():
         for res in results:
             st.markdown(f"### {res['name']} ({res['filename']}) - Score: {res['score']}%")
             st.markdown(f"**Email:** {res['email']}")
+            st.markdown(f"**Phone Number:** {res['phone']}")
             st.markdown(f"**Location:** {res['location']}")
             st.markdown("**Feedback:**")
             if isinstance(res["feedback"], list):
@@ -197,6 +200,8 @@ HR Team
 """
             st.sidebar.markdown(f"### Subject: {email_subject}")
             st.sidebar.code(email_body.strip(), language="markdown")
+            if st.sidebar.button("📞 Call the top candidate"):
+                st.sidebar.success(f"{phone}")
         else:
             st.sidebar.warning("Top candidate email is unknown. Couldn't simulate email.")
 
